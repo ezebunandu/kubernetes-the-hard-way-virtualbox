@@ -1,3 +1,4 @@
+# Weave is an archived project; will replace with calico
 # Provisioning Pod Network
 
 We chose to use CNI - [weave](https://www.weave.works/docs/net/latest/kubernetes/kube-addon/) as our networking option.

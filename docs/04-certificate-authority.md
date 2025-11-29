@@ -8,13 +8,11 @@ You can do these on any machine with `openssl` on it. But you should be able to 
 
 In our case we do it on the master-1 node, as we have set it up to be the administrative client.
 
-
 ## Certificate Authority
 
 In this section you will provision a Certificate Authority that can be used to generate additional TLS certificates.
 
 Create a CA certificate, then generate a Certificate Signing Request and use it to create a private key:
-
 
 ```
 # Create private key for CA
@@ -90,11 +88,9 @@ kube-controller-manager.key
 kube-controller-manager.crt
 ```
 
-
 ### The Kube Proxy Client Certificate
 
 Generate the `kube-proxy` client certificate and private key:
-
 
 ```
 openssl genrsa -out kube-proxy.key 2048
@@ -112,8 +108,6 @@ kube-proxy.crt
 ### The Scheduler Client Certificate
 
 Generate the `kube-scheduler` client certificate and private key:
-
-
 
 ```
 openssl genrsa -out kube-scheduler.key 2048
@@ -150,9 +144,9 @@ DNS.2 = kubernetes.default
 DNS.3 = kubernetes.default.svc
 DNS.4 = kubernetes.default.svc.cluster.local
 IP.1 = 10.96.0.1
-IP.2 = 192.168.5.11
-IP.3 = 192.168.5.12
-IP.4 = 192.168.5.30
+IP.2 = 192.168.56.11
+IP.3 = 192.168.56.12
+IP.4 = 192.168.56.30
 IP.5 = 127.0.0.1
 EOF
 ```
@@ -189,8 +183,8 @@ basicConstraints = CA:FALSE
 keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
 [alt_names]
-IP.1 = 192.168.5.11
-IP.2 = 192.168.5.12
+IP.1 = 192.168.56.11
+IP.2 = 192.168.56.12
 IP.3 = 127.0.0.1
 EOF
 ```
@@ -228,7 +222,6 @@ Results:
 service-account.key
 service-account.crt
 ```
-
 
 ## Distribute the Certificates
 

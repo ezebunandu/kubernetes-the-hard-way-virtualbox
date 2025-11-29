@@ -3,6 +3,7 @@
 In this lab you will bootstrap 2 Kubernetes worker nodes. We already have [Docker](https://www.docker.com) installed on these nodes.
 
 We will now install the kubernetes components
+
 - [kubelet](https://kubernetes.io/docs/admin/kubelet)
 - [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
 
@@ -30,7 +31,7 @@ keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
 [alt_names]
 DNS.1 = worker-1
-IP.1 = 192.168.5.21
+IP.1 = 192.168.56.21
 EOF
 
 openssl genrsa -out worker-1.key 2048
@@ -50,8 +51,9 @@ worker-1.crt
 When generating kubeconfig files for Kubelets the client certificate matching the Kubelet's node name must be used. This will ensure Kubelets are properly authorized by the Kubernetes [Node Authorizer](https://kubernetes.io/docs/admin/authorization/node/).
 
 Get the kub-api server load-balancer IP.
+
 ```
-LOADBALANCER_ADDRESS=192.168.5.30
+LOADBALANCER_ADDRESS=192.168.56.30
 ```
 
 Generate a kubeconfig file for the first worker node:
@@ -85,7 +87,7 @@ Results:
 worker-1.kubeconfig
 ```
 
-### Copy certificates, private keys and kubeconfig files to the worker node:
+### Copy certificates, private keys and kubeconfig files to the worker node
 
 ```
 master-1$ scp ca.crt worker-1.crt worker-1.key worker-1.kubeconfig worker-1:~/
@@ -97,9 +99,9 @@ Going forward all activities are to be done on the `worker-1` node.
 
 ```
 worker-1$ wget -q --show-progress --https-only --timestamping \
-  https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubelet
+  https://dl.k8s.io/release/v1.34.2/bin/linux/amd64/kubectl \
+  https://dl.k8s.io/v1.34.2/bin/linux/amd64/kube-proxy\
+ https://dl.k8s.io/v1.34.2/bin/linux/amd64/kubelet
 ```
 
 Create the installation directories:
@@ -201,7 +203,7 @@ apiVersion: kubeproxy.config.k8s.io/v1alpha1
 clientConnection:
   kubeconfig: "/var/lib/kube-proxy/kubeconfig"
 mode: "iptables"
-clusterCIDR: "192.168.5.0/24"
+clusterCIDR: "192.168.56.0/24"
 EOF
 ```
 
@@ -238,7 +240,6 @@ EOF
 
 ## Verification
 
-
 List the registered Kubernetes nodes from the master node:
 
 ```
@@ -249,7 +250,7 @@ master-1$ kubectl get nodes --kubeconfig admin.kubeconfig
 
 ```
 NAME       STATUS     ROLES    AGE   VERSION
-worker-1   NotReady   <none>   93s   v1.13.0
+worker-1   NotReady   <none>   93s   v1.34.2
 ```
 
 > Note: It is OK for the worker node to be in a NotReady state.

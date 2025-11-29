@@ -1,6 +1,7 @@
 # TLS Bootstrapping Worker Nodes
 
 In the previous step we configured a worker node by
+
 - Creating a set of key pairs for the worker node by ourself
 - Getting them signed by the CA by ourself
 - Creating a kube-config file using this certificate by ourself
@@ -49,9 +50,9 @@ scp ca.crt worker-2:~/
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubelet
+  https://dl.k8s.io/release/v1.34.2/bin/linux/amd64/kubectl \
+  https://dl.k8s.io/v1.34.2/bin/linux/amd64/kube-proxy \
+  https://dl.k8s.io/v1.34.2/bin/linux/amd64/kubelet
 ```
 
 Create the installation directories:
@@ -74,6 +75,7 @@ Install the worker binaries:
   sudo mv kubectl kube-proxy kubelet /usr/local/bin/
 }
 ```
+
 ### Move the ca certificate
 
 `sudo mv ca.crt /var/lib/kubernetes/`
@@ -122,11 +124,11 @@ kubectl create -f bootstrap-token-07401b.yaml
 ```
 
 Things to note:
+
 - **expiration** - make sure its set to a date in the future.
 - **auth-extra-groups** - this is the group the worker nodes are part of. It must start with "system:bootstrappers:" This group does not exist already. This group is associated with this token.
 
 Once this is created the token to be used for authentication is `07401b.f395accd246ae52d`
-
 
 ## Step 2 Authorize workers(kubelets) to create CSR
 
@@ -159,6 +161,7 @@ kubectl create -f csrs-for-bootstrapping.yaml
 ```
 
 ## Step 3 Authorize workers(kubelets) to approve CSR
+
 ```
 kubectl create clusterrolebinding auto-approve-csrs-for-group --clusterrole=system:certificates.k8s.io:certificatesigningrequests:nodeclient --group=system:bootstrappers
 
@@ -223,7 +226,7 @@ Here, we don't have the certificates yet. So we cannot create a kubeconfig file.
 This is to be done on the `worker-2` node.
 
 ```
-sudo kubectl config --kubeconfig=/var/lib/kubelet/bootstrap-kubeconfig set-cluster bootstrap --server='https://192.168.5.30:6443' --certificate-authority=/var/lib/kubernetes/ca.crt
+sudo kubectl config --kubeconfig=/var/lib/kubelet/bootstrap-kubeconfig set-cluster bootstrap --server='https://192.168.56.30:6443' --certificate-authority=/var/lib/kubernetes/ca.crt
 sudo kubectl config --kubeconfig=/var/lib/kubelet/bootstrap-kubeconfig set-credentials kubelet-bootstrap --token=07401b.f395accd246ae52d
 sudo kubectl config --kubeconfig=/var/lib/kubelet/bootstrap-kubeconfig set-context bootstrap --user=kubelet-bootstrap --cluster=bootstrap
 sudo kubectl config --kubeconfig=/var/lib/kubelet/bootstrap-kubeconfig use-context bootstrap
@@ -237,7 +240,7 @@ apiVersion: v1
 clusters:
 - cluster:
     certificate-authority: /var/lib/kubernetes/ca.crt
-    server: https://192.168.5.30:6443
+    server: https://192.168.56.30:6443
   name: bootstrap
 contexts:
 - context:
@@ -314,6 +317,7 @@ EOF
 ```
 
 Things to note here:
+
 - **bootstrap-kubeconfig**: Location of the bootstrap-kubeconfig file.
 - **cert-dir**: The directory where the generated certificates are stored.
 - **rotate-certificates**: Rotates client certificates when they expire.
@@ -334,7 +338,7 @@ apiVersion: kubeproxy.config.k8s.io/v1alpha1
 clientConnection:
   kubeconfig: "/var/lib/kube-proxy/kubeconfig"
 mode: "iptables"
-clusterCIDR: "192.168.5.0/24"
+clusterCIDR: "192.168.56.0/24"
 EOF
 ```
 
@@ -366,8 +370,8 @@ EOF
   sudo systemctl start kubelet kube-proxy
 }
 ```
-> Remember to run the above commands on worker node: `worker-2`
 
+> Remember to run the above commands on worker node: `worker-2`
 
 ## Step 9 Approve Server CSR
 
@@ -378,11 +382,9 @@ NAME                                                   AGE   REQUESTOR          
 csr-95bv6                                              20s   system:node:worker-2      Pending
 ```
 
-
 Approve
 
 `kubectl certificate approve csr-95bv6`
-
 
 ## Verification
 
@@ -396,9 +398,10 @@ master-1$ kubectl get nodes --kubeconfig admin.kubeconfig
 
 ```
 NAME       STATUS   ROLES    AGE   VERSION
-worker-1   NotReady   <none>   93s   v1.13.0
-worker-2   NotReady   <none>   93s   v1.13.0
+worker-1   NotReady   <none>   93s   v1.34.2
+worker-2   NotReady   <none>   93s   v1.34.2
 ```
+
 Note: It is OK for the worker node to be in a NotReady state. That is because we haven't configured Networking yet.
 
 Next: [Configuring Kubectl](11-configuring-kubectl.md)
