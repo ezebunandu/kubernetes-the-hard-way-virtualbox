@@ -17,4 +17,7 @@ Signed-By: /etc/apt/keyrings/docker.asc
 EOF
     ) \
     && apt-get update \
-    && apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    && apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin \
+    && containerd config default | tee /etc/containerd/config.toml \
+    && sed -e 's/SystemdCgroup = false/SystemdCgroup = true/g' -i /etc/containerd/config.toml \
+    && systemctl restart containerd
