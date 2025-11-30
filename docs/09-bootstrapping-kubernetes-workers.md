@@ -97,6 +97,14 @@ master-1$ scp ca.crt worker-1.crt worker-1.key worker-1.kubeconfig worker-1:~/
 
 Going forward all activities are to be done on the `worker-1` node.
 
+install containerd
+```
+sudo apt-get install -y containerd
+sudo mkdir -p /etc/containerd
+sudo containerd config default | sudo tee /etc/containerd/config.toml
+sudo systemctl restart containerd
+```
+
 ```
 worker-1$ wget -q --show-progress --https-only --timestamping \
   https://dl.k8s.io/release/v1.34.2/bin/linux/amd64/kubectl \
@@ -173,7 +181,7 @@ Requires=docker.service
 [Service]
 ExecStart=/usr/local/bin/kubelet \\
   --config=/var/lib/kubelet/kubelet-config.yaml \\
-  --image-pull-progress-deadline=2m \\
+  --container-runtime-endpoint=unix:///run/containerd/containerd.sock \
   --kubeconfig=/var/lib/kubelet/kubeconfig \\
   --tls-cert-file=/var/lib/kubelet/${HOSTNAME}.crt \\
   --tls-private-key-file=/var/lib/kubelet/${HOSTNAME}.key \\
