@@ -185,7 +185,6 @@ ExecStart=/usr/local/bin/kubelet \\
   --kubeconfig=/var/lib/kubelet/kubeconfig \\
   --tls-cert-file=/var/lib/kubelet/${HOSTNAME}.crt \\
   --tls-private-key-file=/var/lib/kubelet/${HOSTNAME}.key \\
-  --network-plugin=cni \\
   --register-node=true \\
   --v=2
 Restart=on-failure

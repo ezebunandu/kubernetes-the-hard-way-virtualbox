@@ -1,4 +1,3 @@
-# Weave is an archived project; will replace with calico
 # Provisioning Pod Network
 
 We chose to use CNI - [weave](https://www.weave.works/docs/net/latest/kubernetes/kube-addon/) as our networking option.
@@ -18,7 +17,7 @@ Extract it to /opt/cni/bin directory
 Deploy weave network. Run only once on the `master` node.
 
 
-`kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"`
+`kubectl apply -f https://reweave.azurewebsites.net/k8s/v1.34/net.yaml`
 
 Weave uses POD CIDR of `10.32.0.0/12` by default.
 

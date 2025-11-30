@@ -297,23 +297,21 @@ After=docker.service
 Requires=docker.service
 
 [Service]
-ExecStart=/usr/local/bin/kubelet \\
-  --bootstrap-kubeconfig="/var/lib/kubelet/bootstrap-kubeconfig" \\
-  --config=/var/lib/kubelet/kubelet-config.yaml \\
-  --image-pull-progress-deadline=2m \\
-  --kubeconfig=/var/lib/kubelet/kubeconfig \\
-  --cert-dir=/var/lib/kubelet/pki/ \\
-  --rotate-certificates=true \\
-  --rotate-server-certificates=true \\
-  --network-plugin=cni \\
-  --register-node=true \\
+ExecStart=/usr/local/bin/kubelet \
+  --bootstrap-kubeconfig="/var/lib/kubelet/bootstrap-kubeconfig" \
+  --config=/var/lib/kubelet/kubelet-config.yaml \
+  --kubeconfig=/var/lib/kubelet/kubeconfig \
+  --cert-dir=/var/lib/kubelet/pki/ \
+  --rotate-certificates=true \
+  --rotate-server-certificates=true \
+  --container-runtime-endpoint=unix:///run/containerd/containerd.sock \
+  --register-node=true \
   --v=2
 Restart=on-failure
 RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
-EOF
 ```
 
 Things to note here:
