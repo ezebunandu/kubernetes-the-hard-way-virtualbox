@@ -6,16 +6,15 @@ We chose to use CNI - [weave](https://www.weave.works/docs/net/latest/kubernetes
 
 Download the CNI Plugins required for weave on each of the worker nodes - `worker-1` and `worker-2`
 
-`wget https://github.com/containernetworking/plugins/releases/download/v0.7.5/cni-plugins-amd64-v0.7.5.tgz`
+`wget https://github.com/containernetworking/plugins/releases/download/v1.4.0/cni-plugins-linux-amd64-v1.4.0.tgz`
 
 Extract it to /opt/cni/bin directory
 
-`sudo tar -xzvf cni-plugins-amd64-v0.7.5.tgz  --directory /opt/cni/bin/`
+`sudo tar -xzvf cni-plugins-linux-amd64-v1.4.0.tgz -C /opt/cni/bin/`
 
 ### Deploy Weave Network
 
 Deploy weave network. Run only once on the `master` node.
-
 
 `kubectl apply -f https://reweave.azurewebsites.net/k8s/v1.34/net.yaml`
 
